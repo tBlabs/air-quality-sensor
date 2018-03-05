@@ -1,17 +1,38 @@
 import { Fluent, FluentParser } from "./FluentParser";
 
-test('fluent', () =>
+
+describe(FluentParser.name, () =>
 {
-    // const fluent = new Fluent();
-    const fluent = new FluentParser();
-    const arr = [3,5,7,9,11,13,15];
-    for (let i = 0; i < 6; i++)
+    let fluent: FluentParser;
+    let isComplete: boolean;
+
+    beforeEach(() =>
     {
-        console.log('-------------#'+i);
-        // fluent.Start(i).A().B(1).A().B(30).A().B(4);
+        fluent = new FluentParser();
+        isComplete = false;
+    });
 
-        const b = arr[i];
+    it('should complete valid series', () =>
+    {
+        const arr = [1, 1, 2, 3];
 
-        fluent.Start(b).Is(7);
-    }
+        arr.forEach(b =>
+        {
+            isComplete = fluent.Start(b).Is(2).Is(3).Complete();
+        });
+
+        expect(isComplete).toBeTruthy();
+    });
+
+    it('should not complete invalid series', () =>
+    {
+        const arr = [1, 1, 2, 1, 3];
+
+        arr.forEach(b =>
+        {
+            isComplete = fluent.Start(b).Is(2).Is(3).Complete();
+        });
+
+        expect(isComplete).toBeFalsy();
+    });
 });

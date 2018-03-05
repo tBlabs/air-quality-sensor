@@ -53,20 +53,20 @@ export class Fluent
 
 export class FluentParser
 {
-    private c = 0;
-    private c2 = 0;
+    private fi = 0;// function index
+    private f2r = 0;// function to run
     private exec = false;
     private val: number = 0;
 
     constructor()
     {
-        this.c2 = 0;
+        this.f2r = 0;
     }
 
     public Start(i: number): FluentParser
     {
         this.val = i;
-        this.c = 0;
+        this.fi = 0;
         //  console.log('start');
         this.exec = true;
 
@@ -76,31 +76,64 @@ export class FluentParser
     public A(): FluentParser
     {
         // this.p--;
-        if (this.exec && (this.c === this.c2))
+        if (this.exec && (this.fi === this.f2r))
         {
             console.log('A()', this.val);
             this.exec = false;
-            this.c2++;
+            this.f2r++;
         }
-        this.c++;
+        this.fi++;
         return this;
     }
 
     public Is(inp: number): FluentParser
     {
-        if (this.exec && (this.c === this.c2))
+        // if (this.exec && (this.fi === this.f2r))
+        // {
+        //     console.log('Is(' + inp + ') val='+this.val+', f2r='+this.f2r);
+        //     if (this.val === inp)
+        //     {
+        //         console.log('true');
+        //     }
+        //      else this.f2r=-1;
+        //     this.exec = false;
+        //     this.f2r++;
+        // }
+        // this.fi++;
+        this.Wrap(() =>
         {
-            console.log('BBB(' + inp + ')', this.val, this.c2);
+            console.log('Is(' + inp + ') val=' + this.val + ', f2r=' + this.f2r);
             if (this.val === inp)
             {
-                console.log('execute');
+                console.log('true');
             }
-            // else this.c2=-1;
-            this.exec = false;
-            this.c2++;
-        }
-        this.c++;
+            else this.f2r = -1;
+        });
         return this;
+    }
+
+    public Complete(): boolean
+    {
+        if (this.f2r === this.fi)
+        {
+            console.log('complete');
+            this.f2r = 0;
+            return true;
+        }
+
+        return false;
+    }
+
+    private Wrap(callback)
+    {
+        if (this.exec && (this.fi === this.f2r))
+        {
+            callback();
+
+            this.exec = false;
+            this.f2r++;
+        }
+        this.fi++;
     }
 }
 
