@@ -7,7 +7,7 @@ export class Environment implements IEnvironment
 {
     public Exists(key: string): boolean
     {
-        return (process.env[key] !== undefined)
+        return (process.env[key] !== undefined);
     }
 
     public IsSet(key: string): boolean
@@ -32,7 +32,7 @@ export class Environment implements IEnvironment
             throw new Error('Environment variable "' + key + '" not exists');
         }
 
-        return process.env[key];
+        return process.env[key] || '';
     }
 
     public ValueOrDefault(key: string, defaultValue: string): string
