@@ -3,18 +3,20 @@ export class Fluent
 {
     private c = 0;
     private c2 = 0;
-    private f = false;
+    private exec = false;
+    private val: number = 0;
 
     constructor()
     {
         this.c2 = 0;
     }
 
-    public Start(): Fluent
+    public Start(i: number): Fluent
     {
+        this.val = i;
         this.c = 0;
-      //  console.log('start');
-        this.f=true;
+        //  console.log('start');
+        this.exec = true;
 
         return this;
     }
@@ -22,27 +24,31 @@ export class Fluent
     public A(): Fluent
     {
         // this.p--;
-        if (this.f && (this.c === this.c2))
+        if (this.exec && (this.c === this.c2))
         {
-            console.log('A()');
+            console.log('A()', this.val);
+            this.exec = false;
             this.c2++;
-            this.f = false;
         }
         this.c++;
         return this;
     }
 
-    public B(): Fluent
+    public B(inp: number): Fluent
     {
-        if (this.f && (this.c === this.c2))
+    if (this.exec && (this.c === this.c2))
+    {
+        console.log('BBB('+inp+')', this.val);
+        if (this.val === inp)
         {
-            console.log('B()');
-            this.c2++;
-            this.f=false;
+            console.log('execute');
         }
-        this.c++;
-        return this;
+        this.exec = false;
+        this.c2++;
     }
+    this.c++;
+    return this;
+}
 }
 
 
@@ -56,37 +62,37 @@ export class Fluent
 //         pm25 = ...
 //     }))
 
-class FluentParser
-{
-    p = 0;
-    b = 0;
+// class FluentParser
+// {
+//     p = 0;
+//     b = 0;
 
-    Parse(b)
-    {
-        this.b = b;
+//     Parse(b)
+//     {
+//         this.b = b;
 
-    }
+//     }
 
-    Is(byte)
-    {
-        if (p > 0) return this;
+//     Is(byte)
+//     {
+//         if (p > 0) return this;
 
-        if (b === byte) p++;
-        else p = 0;
-    }
+//         if (b === byte) p++;
+//         else p = 0;
+//     }
 
-    Get(name)
-    {
-        temp[name] = b
-    }
+//     Get(name)
+//     {
+//         temp[name] = b
+//     }
 
-    Drop(counter)
-    {
-        counter--;
-    }
+//     Drop(counter)
+//     {
+//         counter--;
+//     }
 
-    Compute(callback)
-    {
-        callback(temp)
-    }
-}
+//     Compute(callback)
+//     {
+//         callback(temp)
+//     }
+// }

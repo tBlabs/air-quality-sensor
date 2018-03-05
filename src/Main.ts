@@ -46,8 +46,8 @@ export class Main
         const usbs = devs.filter(d => d.toString().match(/ttyUSB\d+/i));
         console.log('Available ports:', usbs.join(', '));
         const port = new SerialPort('/dev/ttyUSB0', { baudRate: 9600 });
-        let buffer: Buffer = Buffer.alloc(100);
-        port.on('data', (data: Buffer) =>
+       // let buffer: Buffer = Buffer.alloc(100);
+        port.on('data', (data) =>
         {
             // console.log(data);
             //  if (data.length<10)
