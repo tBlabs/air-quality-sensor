@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+import { byte } from '../../types/byte';
 
 export class Fluent
 {
@@ -51,134 +53,94 @@ export class Fluent
     }
 }
 
-export class FluentParser
+export class FluentParser<T extends object>
 {
     private fi = 0;// function index
     private f2r = 0;// function to run
     private exec = false;
-    private val: number = 0;
+    private quantum: byte = 0;
+    private temp: T = <T>{};
 
     constructor()
     {
         this.f2r = 0;
     }
 
-    public Start(i: number): FluentParser
+    public Parse(quantum: byte): FluentParser<T>
     {
-        this.val = i;
+        this.quantum = quantum;
         this.fi = 0;
-        //  console.log('start');
         this.exec = true;
 
         return this;
     }
 
-    public A(): FluentParser
+    public Get(name: keyof T): FluentParser<T>
     {
-        // this.p--;
-        if (this.exec && (this.fi === this.f2r))
-        {
-            console.log('A()', this.val);
-            this.exec = false;
-            this.f2r++;
-        }
-        this.fi++;
-        return this;
-    }
-
-    public Is(inp: number): FluentParser
-    {
-        // if (this.exec && (this.fi === this.f2r))
-        // {
-        //     console.log('Is(' + inp + ') val='+this.val+', f2r='+this.f2r);
-        //     if (this.val === inp)
-        //     {
-        //         console.log('true');
-        //     }
-        //      else this.f2r=-1;
-        //     this.exec = false;
-        //     this.f2r++;
-        // }
-        // this.fi++;
         this.Wrap(() =>
         {
-            console.log('Is(' + inp + ') val=' + this.val + ', f2r=' + this.f2r);
-            if (this.val === inp)
-            {
-                console.log('true');
-            }
-            else this.f2r = -1;
+            this.temp[name] = this.quantum;
         });
+
         return this;
     }
 
-    public Complete(): boolean
+    private Reset(): void
+    {
+        this.f2r = (-1);
+    }
+
+    public Is(toCompare: number): FluentParser<T>
+    {
+        this.Wrap(() =>
+        {
+            if (this.quantum !== toCompare)
+            {
+                this.Reset();
+            }
+        });
+
+        return this;
+    }
+
+    public Any()
+    {
+        this.Wrap();
+
+        return this;
+    }
+
+    public Complete(callback?: (T) => void): boolean
     {
         if (this.f2r === this.fi)
         {
-            console.log('complete');
+            if (callback)
+            {
+                callback(this.temp);
+            }
+
             this.f2r = 0;
+            this.temp = <T>{};
+
             return true;
         }
 
         return false;
     }
 
-    private Wrap(callback)
+    private Wrap(callback?: () => void): void
     {
         if (this.exec && (this.fi === this.f2r))
         {
-            callback();
+            if (callback)
+            {
+                callback();
+            }
 
             this.exec = false;
             this.f2r++;
         }
+
         this.fi++;
     }
 }
-
-
-
-// Parser(b)
-//     .Is(0xAA).Is(0xCC)
-//     .Get('pm25H').Get('pm25L')
-//     .Drop(3)
-//     .Is(0xAB)
-//     .Compute(({ pm25H, pm25L }=> {
-//         pm25 = ...
-//     }))
-
-// class FluentParser
-// {
-//     p = 0;
-//     b = 0;
-
-//     Parse(b)
-//     {
-//         this.b = b;
-
-//     }
-
-//     Is(byte)
-//     {
-//         if (p > 0) return this;
-
-//         if (b === byte) p++;
-//         else p = 0;
-//     }
-
-//     Get(name)
-//     {
-//         temp[name] = b
-//     }
-
-//     Drop(counter)
-//     {
-//         counter--;
-//     }
-
-//     Compute(callback)
-//     {
-//         callback(temp)
-//     }
-// }
