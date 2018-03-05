@@ -36,19 +36,72 @@ export class Fluent
 
     public B(inp: number): Fluent
     {
-    if (this.exec && (this.c === this.c2))
-    {
-        console.log('BBB('+inp+')', this.val);
-        if (this.val === inp)
+        if (this.exec && (this.c === this.c2))
         {
-            console.log('execute');
+            console.log('BBB(' + inp + ')', this.val);
+            if (this.val === inp)
+            {
+                console.log('execute');
+            }
+            this.exec = false;
+            this.c2++;
         }
-        this.exec = false;
-        this.c2++;
+        this.c++;
+        return this;
     }
-    this.c++;
-    return this;
 }
+
+export class FluentParser
+{
+    private c = 0;
+    private c2 = 0;
+    private exec = false;
+    private val: number = 0;
+
+    constructor()
+    {
+        this.c2 = 0;
+    }
+
+    public Start(i: number): FluentParser
+    {
+        this.val = i;
+        this.c = 0;
+        //  console.log('start');
+        this.exec = true;
+
+        return this;
+    }
+
+    public A(): FluentParser
+    {
+        // this.p--;
+        if (this.exec && (this.c === this.c2))
+        {
+            console.log('A()', this.val);
+            this.exec = false;
+            this.c2++;
+        }
+        this.c++;
+        return this;
+    }
+
+    public Is(inp: number): FluentParser
+    {
+        if (this.exec && (this.c === this.c2))
+        {
+            console.log('BBB(' + inp + ')', this.val, this.c2);
+            if (this.val === inp)
+            {
+                console.log('execute');
+            }
+            // else this.c2=-1;
+            this.exec = false;
+            this.c2++;
+        }
+        this.c++;
+        return this;
+    }
 }
 
 
