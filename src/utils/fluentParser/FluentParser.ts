@@ -55,29 +55,49 @@ export class Fluent
 
 export class FluentParser<T extends object>
 {
-    private fi = 0;// function index
-    private f2r = 0;// function to run
-    private exec = false;
+    private functionIndex = 0;
+    private functionToRun = 0;
+    private execute = false;
     private quantum: byte = 0;
     private temp: T = <T>{};
+    private dropping: number = 0;
 
     constructor()
     {
-        this.f2r = 0;
+        this.functionToRun = 0;
     }
 
     public Parse(quantum: byte): FluentParser<T>
     {
         this.quantum = quantum;
-        this.fi = 0;
-        this.exec = true;
+        this.functionIndex = 0;
+        this.execute = true;
+
+        if (this.dropping)
+        {
+            this.dropping--;
+            this.execute = false;
+        }
+
+        return this;
+    }
+
+    public Drop(count: number): FluentParser<T>
+    {
+        if (count > 0)
+        {
+            this.CanRun(() =>
+            {
+                this.dropping = count - 1;
+            });
+        }
 
         return this;
     }
 
     public Get(name: keyof T): FluentParser<T>
     {
-        this.Wrap(() =>
+        this.CanRun(() =>
         {
             this.temp[name] = this.quantum;
         });
@@ -87,13 +107,14 @@ export class FluentParser<T extends object>
 
     private Reset(): void
     {
-        this.f2r = (-1);
+        this.functionToRun = (-1);
     }
 
     public Is(toCompare: number): FluentParser<T>
     {
-        this.Wrap(() =>
+        this.CanRun(() =>
         {
+            // console.log('Is(', toCompare);
             if (this.quantum !== toCompare)
             {
                 this.Reset();
@@ -105,21 +126,21 @@ export class FluentParser<T extends object>
 
     public Any()
     {
-        this.Wrap();
+        this.CanRun();
 
         return this;
     }
 
     public Complete(callback?: (T) => void): boolean
     {
-        if (this.f2r === this.fi)
+        if (this.functionToRun === this.functionIndex)
         {
             if (callback)
             {
                 callback(this.temp);
             }
 
-            this.f2r = 0;
+            this.functionToRun = 0;
             this.temp = <T>{};
 
             return true;
@@ -128,19 +149,19 @@ export class FluentParser<T extends object>
         return false;
     }
 
-    private Wrap(callback?: () => void): void
+    private CanRun(callback?: () => void): void
     {
-        if (this.exec && (this.fi === this.f2r))
+        if (this.execute && (this.functionIndex === this.functionToRun))
         {
             if (callback)
             {
                 callback();
             }
 
-            this.exec = false;
-            this.f2r++;
+            this.execute = false;
+            this.functionToRun++;
         }
 
-        this.fi++;
+        this.functionIndex++;
     }
 }

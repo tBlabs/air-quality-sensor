@@ -21,11 +21,24 @@ describe(FluentParser.name, () =>
 
     it('should complete valid series', () =>
     {
-        const arr = [1, 1, 2, 3];
+        const arr = [1, 1, 0x02, 0x03];
 
         arr.forEach(b =>
         {
-            isComplete = fluent.Parse(b).Is(2).Is(3).Complete();
+            isComplete = fluent.Parse(b).Is(0x02).Is(0x03).Complete();
+        });
+
+        expect(isComplete).toBeTruthy();
+    });
+
+    it.only('should drop', () =>
+    {
+        const arr = [1, 2, 3, 4, 5, 6];
+
+        arr.forEach((b,i) =>
+        {
+            // console.log('#'+i);
+            isComplete = fluent.Parse(b).Is(1).Drop(1).Is(3).Drop(2).Is(6).Complete();
         });
 
         expect(isComplete).toBeTruthy();

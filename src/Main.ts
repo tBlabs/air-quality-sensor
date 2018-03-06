@@ -27,23 +27,6 @@ export class Main
         @inject(Types.IEnvironment) private _env: IEnvironment)
     { }
 
-    // public ParseSensorFrame(data): number
-    // {
-    //     if (data.length === 10)
-    //     {
-    //         if ((data[0] === 0xAA) && (data[1] === 0xC0) && (data[9] === 0xAB))
-    //         {
-    //             const pm25 = (data[3] * 256 + data[2]) / 10;
-    //             const pm10 = (data[5] * 256 + data[4]) / 10;
-    //             const out = 'pm25: ' + pm25.toFixed(1) + ', pm10: ' + pm10.toFixed(1) + ' (ug/m3) @ ' + (new Date()).toLocaleTimeString();
-    //             // process.stdout.write(out + '           \r');
-    //             console.log(out);
-    //             return pm25;
-    //         }
-    //     }
-    //     return 0;
-    // }
-
     public async Run(): Promise<void>
     {
         this._log.Info('Main.Run', 'Starting in "' + this._env.ValueOf('MODE') + '" mode');
@@ -59,21 +42,19 @@ export class Main
 
         port.on('data', (data) =>
         {
-            data.forEach(b =>
+            data.forEach((b: byte) =>
             {
-                parser.Parse(b).Is(0xAA).Is(0xC0)
+                parser.Parse(b)
+                    .Is(0xAA).Is(0xC0)
                     .Get('pm25L').Get('pm25H')
                     .Get('pm10L').Get('pm10H')
-                    .Any().Any().Any()
+                    .Drop(3) // or .Any().Any().Any()
                     .Is(0xAB)
-                    // .Complete((temp: SDS018Sensor) =>
                     .Complete(({ pm25L, pm25H, pm10L, pm10H }) =>
                     {
-                        // const pm25 = (temp.pm25H * 256 + temp.pm25L) / 10;
-                        // const pm10 = (temp.pm10H * 256 + temp.pm10L) / 10;
-                        const pm25 = (pm25H * 256 + pm25L) / 10;
-                        const pm10 = (pm10H * 256 + pm10L) / 10;
-                        const out = 'pm25: ' + pm25.toFixed(1) + ', pm10: ' + pm10.toFixed(1) + ' (ug/m3) @ ' + (new Date()).toLocaleTimeString();
+                        const pm25: number = (pm25H * 256 + pm25L) / 10;
+                        const pm10: number = (pm10H * 256 + pm10L) / 10;
+                        const out: string = 'pm25: ' + pm25.toFixed(1) + ' ug/m3 | pm10: ' + pm10.toFixed(1) + ' ug/m3 @ ' + (new Date()).toLocaleTimeString();
                         console.log(out);
                     });
             });
