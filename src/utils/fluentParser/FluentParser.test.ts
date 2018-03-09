@@ -1,5 +1,5 @@
-import { byte } from './../../types/byte';
-import { Fluent, FluentParser } from "./FluentParser";
+import { byte } from '../../types/byte';
+import { FluentParser } from "./FluentParser";
 import * as _ from 'lodash';
 
 interface Foo
@@ -31,14 +31,13 @@ describe(FluentParser.name, () =>
         expect(isComplete).toBeTruthy();
     });
 
-    it.only('should drop', () =>
+    it('Drop() should drop', () =>
     {
-        const arr = [1, 2, 3, 4, 5, 6];
+        const arr = [0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5];
 
-        arr.forEach((b,i) =>
+        arr.forEach(b =>
         {
-            // console.log('#'+i);
-            isComplete = fluent.Parse(b).Is(1).Drop(1).Is(3).Drop(2).Is(6).Complete();
+            isComplete = fluent.Parse(b).Is(0xA0).Drop(1).Is(0xA2).Drop(2).Is(0xA5).Complete();
         });
 
         expect(isComplete).toBeTruthy();
@@ -46,11 +45,11 @@ describe(FluentParser.name, () =>
 
     it('should not complete invalid series', () =>
     {
-        const arr = [1, 1, 2, 1, 3];
+        const arr = [1, 1, 0xA0, 1, 0xA1];
 
         arr.forEach(b =>
         {
-            isComplete = fluent.Parse(b).Is(2).Is(3).Complete();
+            isComplete = fluent.Parse(b).Is(0xA0).Is(0xA1).Complete();
         });
 
         expect(isComplete).toBeFalsy();
@@ -58,13 +57,14 @@ describe(FluentParser.name, () =>
 
     it('should get all Foo values', () =>
     {
-        const arr = [1, 1, 2, 69, 5, 96];
+        const arr = [1, 1, 0xA0, 0xB0, 0xA1, 0xB1];
         let out: Foo;
 
         arr.forEach(b =>
         {
             isComplete = fluent.Parse(b)
-                .Is(2).Get('foo').Is(5).Get('bar')
+                .Is(0xA0).Get('foo')
+                .Is(0xA1).Get('bar')
                 .Complete((temp) =>
                 {
                     out = temp;
@@ -72,20 +72,20 @@ describe(FluentParser.name, () =>
         });
 
         expect(isComplete).toBeTruthy();
-        expect(out.foo).toBe(69);
-        expect(out.bar).toBe(96);
+        expect(out.foo).toBe(0xB0);
+        expect(out.bar).toBe(0xB1);
     });
 
     it('should get Foo values from noised stream', () =>
     {
-        const arr = [1, 1, 2, 69, 6, 96, 2, 100, 5, 101];
+        const arr = [1, 1, 0xA0, 0xB0, 0xA1, 2, 0x0B, 3, 3, 0xA0, 0xB0, 0xA1, 0xB1];
         let out: Foo;
 
         arr.forEach(b =>
         {
             isComplete = fluent.Parse(b)
-                .Is(2).Get('foo')
-                .Is(5).Get('bar')
+                .Is(0xA0).Get('foo')
+                .Is(0xA1).Get('bar')
                 .Complete((temp) =>
                 {
                     out = temp;
@@ -93,19 +93,19 @@ describe(FluentParser.name, () =>
         });
 
         expect(isComplete).toBeTruthy();
-        expect(out.foo).toBe(100);
-        expect(out.bar).toBe(101);
+        expect(out.foo).toBe(0xB0);
+        expect(out.bar).toBe(0xB1);
     });
 
-    it('should get Foo values from noised stream', () =>
+    it('Any() should drop', () =>
     {
-        const arr = [1, 1, 0x02, 0x03, 0x04, 0x05];
+        const arr = [1, 1, 0xA0, 0xC0, 0xC1, 0xB0];
         let out: Foo;
 
         arr.forEach(b =>
         {
             isComplete = fluent.Parse(b)
-                .Is(0x02).Any().Any().Get('foo')
+                .Is(0xA0).Any().Any().Get('foo')
                 .Complete((temp) =>
                 {
                     out = temp;
@@ -113,7 +113,15 @@ describe(FluentParser.name, () =>
         });
 
         expect(isComplete).toBeTruthy();
-        expect(out.foo).toBe(0x05);
+        expect(out.foo).toBe(0xB0);
+    });
+
+    it('nothing should happen for empty stream', () =>
+    {
+        isComplete = fluent.Parse(undefined)
+            .Complete();
+
+            expect(isComplete).toBeFalsy();
     });
 
     it('should catch two frames', () =>

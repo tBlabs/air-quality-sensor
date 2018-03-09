@@ -1,88 +1,37 @@
-import * as _ from 'lodash';
 import { byte } from '../../types/byte';
-
-export class Fluent
-{
-    private c = 0;
-    private c2 = 0;
-    private exec = false;
-    private val: number = 0;
-
-    constructor()
-    {
-        this.c2 = 0;
-    }
-
-    public Start(i: number): Fluent
-    {
-        this.val = i;
-        this.c = 0;
-        //  console.log('start');
-        this.exec = true;
-
-        return this;
-    }
-
-    public A(): Fluent
-    {
-        // this.p--;
-        if (this.exec && (this.c === this.c2))
-        {
-            console.log('A()', this.val);
-            this.exec = false;
-            this.c2++;
-        }
-        this.c++;
-        return this;
-    }
-
-    public B(inp: number): Fluent
-    {
-        if (this.exec && (this.c === this.c2))
-        {
-            console.log('BBB(' + inp + ')', this.val);
-            if (this.val === inp)
-            {
-                console.log('execute');
-            }
-            this.exec = false;
-            this.c2++;
-        }
-        this.c++;
-        return this;
-    }
-}
 
 export class FluentParser<T extends object>
 {
+    private quantum: byte = 0;
+    private temp: T = <T>{};
     private functionIndex = 0;
     private functionToRun = 0;
     private execute = false;
-    private quantum: byte = 0;
-    private temp: T = <T>{};
     private dropping: number = 0;
 
-    constructor()
+    public Parse(quantum: byte): this
     {
-        this.functionToRun = 0;
-    }
-
-    public Parse(quantum: byte): FluentParser<T>
-    {
-        this.quantum = quantum;
-        this.functionIndex = 0;
-        this.execute = true;
-
-        if (this.dropping)
+        if (quantum === undefined) 
         {
-            this.dropping--;
             this.execute = false;
+        }
+        else
+        {
+            this.quantum = quantum;
+            this.functionIndex = 0;
+            this.execute = true;
+
+            if (this.dropping)
+            {
+                this.dropping--;
+                this.execute = false;
+            }
         }
 
         return this;
     }
 
-    public Drop(count: number): FluentParser<T>
+    public Drop(count: number): this
     {
         if (count > 0)
         {
@@ -95,7 +44,7 @@ export class FluentParser<T extends object>
         return this;
     }
 
-    public Get(name: keyof T): FluentParser<T>
+    public Get(name: keyof T): this
     {
         this.CanRun(() =>
         {
@@ -104,33 +53,27 @@ export class FluentParser<T extends object>
 
         return this;
     }
-
-    private Reset(): void
-    {
-        this.functionToRun = (-1);
-    }
-
-    public Is(toCompare: number): FluentParser<T>
+    
+    public Is(toCompare: byte): this
     {
         this.CanRun(() =>
         {
-            // console.log('Is(', toCompare);
             if (this.quantum !== toCompare)
             {
                 this.Reset();
             }
         });
-
+        
         return this;
     }
-
-    public Any()
+    
+    public Any(): this
     {
         this.CanRun();
-
+        
         return this;
     }
-
+    
     public Complete(callback?: (T) => void): boolean
     {
         if (this.functionToRun === this.functionIndex)
@@ -139,14 +82,19 @@ export class FluentParser<T extends object>
             {
                 callback(this.temp);
             }
-
+            
             this.functionToRun = 0;
             this.temp = <T>{};
-
+            
             return true;
         }
-
+        
         return false;
+    }
+    
+    private Reset(): void
+    {
+        this.functionToRun = (-1);
     }
 
     private CanRun(callback?: () => void): void
@@ -157,7 +105,7 @@ export class FluentParser<T extends object>
             {
                 callback();
             }
-
+            
             this.execute = false;
             this.functionToRun++;
         }
