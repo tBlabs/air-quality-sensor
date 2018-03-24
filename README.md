@@ -28,6 +28,8 @@ In `Main.ts` `Run()` method. This is the place for your code. Put all dependenci
 
 Use `npm run serve` to build and run your code continuously.
 
-## In order to problems with startup
+## In case of problems
 
 - Remove `package-lock.json`
+- Remove `.npmrc`
+- Remove `preinstall` script from `package.json`
