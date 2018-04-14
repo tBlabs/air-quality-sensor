@@ -26,12 +26,6 @@ export class AirSensor
     {
         _data.Data$.subscribe((data: Buffer) =>
         {
-            // const result: parser_output = this.Parse(data);
-
-            // if (result !== null)
-            // {
-            //     this.Data$.next(new AirSensorData(result.pm25, result.pm10));
-            // }
             this.Parse(data, (result: parser_output) =>
             {
                 this.Data$.next(new AirSensorData(result.pm25, result.pm10));
