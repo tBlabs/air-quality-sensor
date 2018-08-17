@@ -41,9 +41,8 @@ export class AirSensorDataSource
 
     constructor(_config: AirSensorDataSourceConfig)
     {
-        // const serial = new SerialPort('/dev/ttyUSB0', { baudRate: 9600 });
         const serial = new SerialPort(_config.Port, { baudRate: 9600 });
-// console.log(serial);
+
         serial.on('open', () =>
         {
             this.Status = SensorDataSourceConnectionStatus.Connected;
