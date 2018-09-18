@@ -34,6 +34,7 @@ export class AirSensorDataSource
 
     constructor(_config: AirSensorDataSourceConfig)
     {
+<<<<<<< HEAD
         this.serial = new SerialPort(_config.Port, { baudRate: 9600 });
 
         this.serial.on('data', (data: Buffer) =>
@@ -42,6 +43,11 @@ export class AirSensorDataSource
         });
 
         this.serial.on('open', () =>
+=======
+        const serial = new SerialPort(_config.Port, { baudRate: 9600 });
+
+        serial.on('open', () =>
+>>>>>>> 33111f863be1b3593cd3c79709b663c1f6b05bbe
         {
             this.Status = AirSensorConnectionStatus.Connected;
         });
@@ -64,3 +70,7 @@ export class AirSensorDataSource
         });
     }
 }
+<<<<<<< HEAD
+=======
+   
+>>>>>>> 33111f863be1b3593cd3c79709b663c1f6b05bbe
