@@ -58,7 +58,7 @@ describe(FluentParser.name, () =>
     it('should get all Foo values', () =>
     {
         const arr = [1, 1, 0xA0, 0xB0, 0xA1, 0xB1];
-        let out: Foo;
+        let out: Foo = <Foo>{};
 
         arr.forEach(b =>
         {
@@ -79,7 +79,7 @@ describe(FluentParser.name, () =>
     it('should get Foo values from noised stream', () =>
     {
         const arr = [1, 1, 0xA0, 0xB0, 0xA1, 2, 0x0B, 3, 3, 0xA0, 0xB0, 0xA1, 0xB1];
-        let out: Foo;
+        let out: Foo = <Foo>{};
 
         arr.forEach(b =>
         {
@@ -100,7 +100,7 @@ describe(FluentParser.name, () =>
     it('Any() should drop', () =>
     {
         const arr = [1, 1, 0xA0, 0xC0, 0xC1, 0xB0];
-        let out: Foo;
+        let out: Foo = <Foo>{};
 
         arr.forEach(b =>
         {
@@ -127,7 +127,7 @@ describe(FluentParser.name, () =>
     it('should catch two frames', () =>
     {
         const arr = [1, 1, 0xAA, 0xAB, 0xFF, 2, 2, 0xAA, 0xAB, 0xAC, 3, 3];
-        let out: Foo;
+        let out: Foo = <Foo>{};
         let completions = 0;
         let temp1 = 0;
 

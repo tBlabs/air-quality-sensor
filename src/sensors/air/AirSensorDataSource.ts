@@ -1,30 +1,24 @@
+import { AirSensorConnectionStatus } from './SensorDataSourceConnectionStatus';
 import { injectable } from 'inversify';
 import 'reflect-metadata';
 import * as Rx from 'rxjs';
 import { AirSensorDataSourceConfig } from './AirSensorDataSourceConfig';
 import * as SerialPort from 'serialport';
 
-
-enum SensorDataSourceConnectionStatus
-{
-    Disconnected,
-    Connected
-}
-
 @injectable()
 export class AirSensorDataSource
 {
-    private connectionStatus$: Rx.Subject<SensorDataSourceConnectionStatus> = new Rx.Subject();
+    private serial: SerialPort;
+    private connectionStatus$: Rx.Subject<AirSensorConnectionStatus> = new Rx.Subject();
     private data$: Rx.Subject<Buffer> = new Rx.Subject();
 
-    public get Status$(): Rx.Subject<SensorDataSourceConnectionStatus>
+    public get Status$(): Rx.Subject<AirSensorConnectionStatus>
     {
         return this.connectionStatus$;
     }
 
-    private set Status(status: SensorDataSourceConnectionStatus)
+    private set Status(status: AirSensorConnectionStatus)
     {
-        console.log(status);
         this.connectionStatus$.next(status);
     }
 
@@ -35,29 +29,38 @@ export class AirSensorDataSource
 
     private set Data(data: Buffer)
     {
-        // console.log(data );
         this.data$.next(data);
     }
 
     constructor(_config: AirSensorDataSourceConfig)
     {
-        // const serial = new SerialPort('/dev/ttyUSB0', { baudRate: 9600 });
-        const serial = new SerialPort(_config.Port, { baudRate: 9600 });
-// console.log(serial);
-        serial.on('open', () =>
-        {
-            this.Status = SensorDataSourceConnectionStatus.Connected;
-        });
+        this.serial = new SerialPort(_config.Port, { baudRate: 9600 });
 
-        serial.on('data', (data: Buffer) =>
+        this.serial.on('data', (data: Buffer) =>
         {
             this.Data = data;
         });
 
-        serial.on('error', () =>
+        this.serial.on('open', () =>
         {
-            this.Status = SensorDataSourceConnectionStatus.Disconnected;
+            this.Status = AirSensorConnectionStatus.Connected;
+        });
+
+        this.serial.on('error', (err) =>
+        {
+            this.Status = AirSensorConnectionStatus.Disconnected;
+        });
+    }
+
+    public async Detach(): Promise<any>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            this.serial.close((e: Error) =>
+            {
+                if (e !== null) reject(e);
+                else resolve();
+            });
         });
     }
 }
-   

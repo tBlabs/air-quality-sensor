@@ -19,24 +19,28 @@ interface AirSensorValueBytes
 @injectable()
 export class AirSensor
 {
-    public Data$: Rx.BehaviorSubject<AirSensorData> = new Rx.BehaviorSubject(new AirSensorData());
+    private sensorData: AirSensorData = new AirSensorData();
+    public Data$: Rx.BehaviorSubject<AirSensorData> = new Rx.BehaviorSubject(this.sensorData);
+
     private parser = new FluentParser<AirSensorValueBytes>();
 
-    constructor(_data: AirSensorDataSource)
+    constructor(private _data: AirSensorDataSource)
     {
         _data.Data$.subscribe((data: Buffer) =>
         {
-            // const result: parser_output = this.Parse(data);
-
-            // if (result !== null)
-            // {
-            //     this.Data$.next(new AirSensorData(result.pm25, result.pm10));
-            // }
             this.Parse(data, (result: parser_output) =>
             {
-                this.Data$.next(new AirSensorData(result.pm25, result.pm10));
+                this.sensorData.pm25 = result.pm25;
+                this.sensorData.pm10 = result.pm10;
+
+                this.Data$.next(this.sensorData);
             });
-        })
+        });
+    }
+
+    public async Dispose()
+    {
+        await this._data.Detach();
     }
 
     private Parse(data: Buffer, onCompleteCallback: (parser_output) => void): void

@@ -1,14 +1,13 @@
-import { AirSensorStatus } from './AirSensorStatus';
-
 export class AirSensorData
 {
-    public status: AirSensorStatus = AirSensorStatus.Offline;
-    public pm25: number = (-1);
-    public pm10: number = (-1);
+    public pm25: number = 0;
+    public pm10: number = 0;
 
-    constructor(pm25?: number, pm10?: number)
+    public ToString(): string
     {
-        this.pm25 = pm25 ? pm25 : (-1);
-        this.pm10 = pm10 ? pm10 : (-1);
+        const pm25percentage = (this.pm25 / 25) * 100;
+        const pm10percentage = (this.pm10 / 40) * 100;
+        
+        return `pm25: ${ this.pm25.toFixed(1) } ug/m3 (${pm25percentage.toFixed(0)}%) | pm10: ${ this.pm10.toFixed(1) } ug/m3 (${pm10percentage.toFixed(0)}%)`;  
     }
 }

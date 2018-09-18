@@ -27,7 +27,8 @@ try
     IoC.bind<IRunMode>(Types.IRunMode).to(RunMode).whenTargetIsDefault();
     IoC.bind<ILogger>(Types.ILogger).to(Logger).inSingletonScope().whenTargetIsDefault();
     IoC.bind<Main>(Main).toSelf().inSingletonScope().whenTargetIsDefault();
-    IoC.bind<IAirSensor>(Types.IAirSensor).to(AirSensor).inSingletonScope().whenTargetIsDefault();
+    // IoC.bind<IAirSensor>(Types.IAirSensor).to(AirSensor).inSingletonScope().whenTargetIsDefault();
+    IoC.bind<AirSensor>(AirSensor).toSelf().inSingletonScope();
     IoC.bind<AirSensorDataSource>(AirSensorDataSource).toSelf().inSingletonScope();
     IoC.bind<AirSensorDataSourceConfig>(AirSensorDataSourceConfig).toSelf().inSingletonScope();
 }

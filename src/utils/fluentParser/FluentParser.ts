@@ -48,7 +48,7 @@ export class FluentParser<T extends object>
     {
         this.CanRun(() =>
         {
-            this.temp[name] = this.quantum;
+            this.temp[name.toString()] = this.quantum;
         });
 
         return this;
