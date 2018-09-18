@@ -121,7 +121,7 @@ describe(FluentParser.name, () =>
         isComplete = fluent.Parse(undefined)
             .Complete();
 
-            expect(isComplete).toBeFalsy();
+        expect(isComplete).toBeFalsy();
     });
 
     it('should catch two frames', () =>
