@@ -1,63 +1,37 @@
 {
-    "name": "node.ts-startup",
+    "name": "air-quality-sensor",
     "version": "1.0.0",
-    "description": "node.ts boilerplate",
+    "description": "air quality sensor",
     "main": "./bin/startup.js",
     "author": "tB",
     "license": "beerware",
-    "engines": {
-        "node": "8.4.0",
-        "npm": "5.3.0"
-    },
     "scripts": {
-        "preinstall": "sudo npm i -g typescript jest tslint npm-run-all",
+        "build": "tsc -p .",
         "start": "node ./bin/startup.js",
         "run": "npm run clean && npm run build && clear && npm run start",
         "watch": "tsc --watch",
         "monitor": "nodemon ./bin/startup.js",
         "serve": "npm run clean && run-p watch monitor",
-        "lint": "tslint -c tslint.json './src/**/*.{ts,tsx}' --format msbuild",
         "test": "jest --runInBand",
-        "build": "tsc -p .",
-        "clean": "rm ./bin -rf",
-        "autofix": "tslint --fix --project .",
-        "publish": "git push origin master",
-        "logs:stage": "heroku logs --tail --remote stage",
-        "logs:prod": "heroku logs --tail --remote prod",
-        "deploy:stage": "git push stage master && npm run stage:logs",
-        "deploy:prod": "git push prod master && npm run prod:logs"
+        "clean": "rm ./bin -rf"
     },
     "devDependencies": {
-        "@types/axios": "^0.14.0",
         "@types/dotenv": "^4.0.2",
-        "@types/inversify": "^2.0.33",
-        "@types/jasmine": "^2.8.6",
-        "@types/jest": "^22.1.4",
-        "@types/lodash": "^4.14.104",
         "@types/node": "^9.4.6",
         "@types/serialport": "^6.0.1",
         "@types/shelljs": "^0.7.8",
         "@types/uuid": "^3.4.3",
-        "jest": "^22.4.2",
         "nodemon": "^1.17.1",
         "npm-check-updates": "^2.14.1",
-        "npm-run-all": "^4.1.2",
-        "ts-jest": "^22.4.1",
-        "typescript": "^2.7.2"
+        "npm-run-all": "^4.1.2"
     },
     "dependencies": {
-        "async-delay": "^1.0.3",
         "asyncawait": "^1.0.6",
-        "axios": "^0.18.0",
         "dotenv": "^5.0.1",
-        "git-rev": "^0.2.1",
         "inversify": "^4.11.1",
-        "jasmine-core": "^3.1.0",
         "os": "^0.1.1",
         "reflect-metadata": "^0.1.12",
         "rxjs": "^5.5.6",
-        "serialport": "^6.1.1",
-        "shelljs": "^0.8.1",
-        "uuid": "^3.2.1"
+        "shelljs": "^0.8.1"
     }
 }

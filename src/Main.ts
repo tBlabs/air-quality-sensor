@@ -1,19 +1,7 @@
 import { AirSensorData } from './sensors/air/AirSensorData';
 import { AirSensor } from './sensors/air/AirSensor';
-import { IRunMode } from './services/runMode/IRunMode';
-import { RunMode } from './services/runMode/RunMode';
-import { IEnvironment } from './services/environment/IEnvironment';
-import { ILogger } from './services/logger/ILogger';
-import { Logger } from './services/logger/Logger';
-import { injectable, inject } from 'inversify';
-import { Environment } from './services/environment/Environment';
-import { Types } from './IoC/Types';
-import * as SerialPort from 'serialport';
+import { injectable } from 'inversify';
 import * as shell from 'shelljs';
-import delay from 'async-delay';
-import * as Rx from 'rxjs';
-import { FluentParser } from './utils/fluentParser/FluentParser';
-import { byte } from './types/byte';
 import { AirSensorDataSourceConfig } from './sensors/air/AirSensorDataSourceConfig';
 
 @injectable()

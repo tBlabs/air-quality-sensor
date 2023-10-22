@@ -6,7 +6,7 @@ import { IEnvironment } from '../../services/environment/IEnvironment';
 @injectable()
 export class AirSensorDataSourceConfig
 {
-    constructor( @inject(Types.IEnvironment) private _env: IEnvironment)
+    constructor(@inject(Types.IEnvironment) private _env: IEnvironment)
     { }
 
     public get Port(): string
